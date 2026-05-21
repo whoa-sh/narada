@@ -40,8 +40,8 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("io.mockk:mockk:1.13.10")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("org.testcontainers:junit-jupiter:1.20.4")
-	testImplementation("org.testcontainers:postgresql:1.20.4")
+	testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+	testImplementation("org.testcontainers:postgresql:1.21.4")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
