@@ -46,6 +46,7 @@ WORKDIR /app
 
 RUN set -eux; \
 	addgroup -S spring && adduser -S -G spring spring; \
+	apk upgrade --no-cache; \
 	apk add --no-cache wget
 
 LABEL org.opencontainers.image.title="narada" \
