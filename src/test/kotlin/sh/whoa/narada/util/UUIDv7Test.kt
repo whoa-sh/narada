@@ -1,5 +1,6 @@
 package sh.whoa.narada.util
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -11,6 +12,14 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class UUIDv7Test {
+	@AfterEach
+	fun resetState() {
+		val lastStateField = UUIDv7::class.java.getDeclaredField("lastState")
+		lastStateField.isAccessible = true
+		val lastState = lastStateField.get(null) as java.util.concurrent.atomic.AtomicLong
+		lastState.set(0)
+	}
+
 	@Test
 	fun `test no duplicate UUID should be generated`() {
 		val uuidSet = mutableSetOf<UUID>()
@@ -229,6 +238,53 @@ class UUIDv7Test {
 		} while (extractTimestamp(u2) == ts1)
 
 		assertTrue(u1 < u2, "UUID with later millisecond should be greater")
+	}
+
+	@Test
+	fun `test clock regression - should increment sequence but stay monotonic`() {
+		val u1 = UUIDv7.randomUUID()
+		val ts1 = extractTimestamp(u1)
+
+		// Mock a future state in UUIDv7 using reflection
+		val lastStateField = UUIDv7::class.java.getDeclaredField("lastState")
+		lastStateField.isAccessible = true
+		val lastState = lastStateField.get(null) as java.util.concurrent.atomic.AtomicLong
+
+		// Set state to 1 second in the future with sequence 100
+		val futureTs = ts1 + 1000
+		val futureSeq = 100
+		val futureState = (futureTs shl 12) or (futureSeq.toLong() and 0x0FFF)
+		lastState.set(futureState)
+
+		// Generate new UUID - should hit the 'else' branch because currentTime < futureTs
+		val u2 = UUIDv7.randomUUID()
+		val ts2 = extractTimestamp(u2)
+		val seq2 = extractRandA(u2)
+
+		assertEquals(futureTs, ts2, "Should have used the future timestamp from state")
+		assertEquals(futureSeq + 1, seq2, "Should have incremented the sequence from state")
+		assertTrue(u1 < u2)
+	}
+
+	@Test
+	fun `test sequence overflow - should increment timestamp and reset sequence`() {
+		// Mock state at the very end of a millisecond sequence
+		val lastStateField = UUIDv7::class.java.getDeclaredField("lastState")
+		lastStateField.isAccessible = true
+		val lastState = lastStateField.get(null) as java.util.concurrent.atomic.AtomicLong
+
+		val ts = System.currentTimeMillis()
+		val maxSeq = 0x0FFF
+		val state = (ts shl 12) or (maxSeq.toLong() and 0x0FFF)
+		lastState.set(state)
+
+		// Next ID should overflow sequence and increment timestamp
+		val u = UUIDv7.randomUUID()
+		val tsAfter = extractTimestamp(u)
+		val seqAfter = extractRandA(u)
+
+		assertEquals(ts + 1, tsAfter, "Timestamp should have incremented due to overflow")
+		assertEquals(0, seqAfter, "Sequence should have reset to 0")
 	}
 
 	private fun extractTimestamp(uuid: UUID): Long {

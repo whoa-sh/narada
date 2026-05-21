@@ -40,4 +40,14 @@ abstract class BaseEntity : Persistable<UUID> {
 	fun markNotNew() {
 		isNewEntity = false
 	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other !is BaseEntity) return false
+		return id == other.id
+	}
+
+	override fun hashCode(): Int = id.hashCode()
+
+	override fun toString(): String = "${this::class.simpleName}(id=$id)"
 }

@@ -9,5 +9,9 @@ tasks:
     description: Implemented bitwise UUIDv7, Hibernate auditing with protected set, and cleaned up redundant annotations.
   - id: docs-migration
     name: .agents Documentation Migration
-    status: IN_PROGRESS
+    status: COMPLETED
     description: Migrating all project documentation to the modernized .agents structure per the TwoFac pattern.
+  - id: foundation-testing
+    name: Foundation Testing (UUIDv7 & BaseEntity)
+    status: COMPLETED
+    description: Achieved 100% line and branch coverage for core foundation components in both repositories.
