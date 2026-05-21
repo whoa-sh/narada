@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM eclipse-temurin:21-jdk-jammy AS builder
+FROM eclipse-temurin:25-jdk-jammy AS builder
 WORKDIR /workspace
 
 # Copy Gradle build and wrapper files first for dependency-layer cache reuse.
@@ -41,7 +41,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 	test -n "$ARTIFACT"; \
 	cp "$ARTIFACT" /workspace/app.jar
 
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 WORKDIR /app
 
 RUN set -eux; \
