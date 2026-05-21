@@ -21,10 +21,12 @@ abstract class BaseEntity : Persistable<UUID> {
 	@CreationTimestamp
 	@Column(updatable = false, nullable = false)
 	var createdAt: Instant? = null
+		protected set
 
 	@UpdateTimestamp
 	@Column(nullable = false)
 	var updatedAt: Instant? = null
+		protected set
 
 	@Transient
 	@jakarta.persistence.Transient
