@@ -1,0 +1,13 @@
+tasks:
+  - id: baseline-synchronization
+    name: Repository Skeleton Synchronization
+    status: COMPLETED
+    description: Synchronized Gradle versions, wrapper scripts, and Docker configurations across both repositories.
+  - id: enterprise-refinements
+    name: High-Performance Enterprise Refinements
+    status: COMPLETED
+    description: Implemented bitwise UUIDv7, Hibernate auditing with protected set, and cleaned up redundant annotations.
+  - id: docs-migration
+    name: .agents Documentation Migration
+    status: IN_PROGRESS
+    description: Migrating all project documentation to the modernized .agents structure per the TwoFac pattern.

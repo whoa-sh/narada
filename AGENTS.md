@@ -1,45 +1,39 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
+This repository is a Kotlin Spring Boot enterprise service (`narada`).
 
-This is a Kotlin Spring Boot service named `narada`.
+## Core Architecture
 
-- `src/main/kotlin/sh/whoa/narada/` contains application source code. The current entry point is `NaradaApplication.kt`.
-- `src/main/resources/` contains runtime configuration, including `application.properties`.
-- `src/test/kotlin/sh/whoa/narada/` contains JUnit 5/Spring Boot tests.
-- `build.gradle.kts`, `settings.gradle.kts`, and `gradle/wrapper/` define the Gradle build. Use the checked-in wrapper instead of a system Gradle install.
+- **Language:** Kotlin 2.3.21, JDK 21, Spring Boot 4.0.6.
+- **Persistence:** PostgreSQL with pure Hibernate auditing and UUIDv7.
+- **Reliability:** Built-in Docker smoke tests and Node 24 CI/CD.
 
-Keep package paths aligned with `sh.whoa.narada`. Add new code under feature-oriented packages as the service grows, such as `controller`, `service`, `repository`, or domain-specific names.
+## Module Map
 
-## Build, Test, and Development Commands
+- `sh.whoa.narada.core`: Shared base entities and JPA optimizations.
+- `sh.whoa.narada.util`: High-performance internal utilities (UUIDv7, etc).
+- `src/main/resources/db/migration`: Flyway database migrations (minimal baseline standard).
 
-Run commands from the repository root.
+## Agent Skills
 
-- `.\gradlew.bat bootRun` starts the Spring Boot app locally.
-- `.\gradlew.bat test` runs the JUnit 5 test suite.
-- `.\gradlew.bat build` compiles, tests, and packages the project.
-- `.\gradlew.bat clean` removes generated build output.
+Use specialized skills for detailed command and routing guidance:
 
-On Unix-like shells, use `./gradlew` instead of `.\gradlew.bat`.
+- `.agents/skills/gradle-build/SKILL.md`
+- `.agents/skills/service-architecture/SKILL.md`
+- `.agents/skills/deployment/SKILL.md`
 
-## Coding Style & Naming Conventions
+## Agent Navigation
 
-Use Kotlin idioms and keep code concise. Existing files use tabs for indentation; match that style unless the project adopts a formatter. Class names use `PascalCase`, functions and properties use `camelCase`, and test classes should end with `Tests`.
+To keep context lean, technical logs and status are delegated to:
 
-The build enables strict nullability handling with `-Xjsr305=strict`. Prefer explicit nullability, constructor injection for Spring components, immutable `val` properties, and small functions with clear names. JPA entities are opened through the Kotlin JPA plugin, so avoid manual `open` modifiers unless a framework requires them.
+- `.agents/tracker.md`: Implementation status and decision log.
+- `.agents/tasks.yml`: Progress tracking registry.
+- `README.md`: Human-centric overview and setup.
 
-## Testing Guidelines
+## Security Guardrails
 
-Tests use Spring Boot test support, Kotlin test, and JUnit 5 via `useJUnitPlatform()`. Put tests under `src/test/kotlin` with package names matching production code.
+The following sensitive files are gitignored and MUST NOT be committed:
 
-Name integration-style Spring tests `*Tests` and focused unit tests after the class or behavior under test, for example `LedgerServiceTests`. Add tests for new controllers, repositories, and service logic.
-
-## Commit & Pull Request Guidelines
-
-The current Git history only contains `Initial Commit`, so there is no established convention yet. Use short, imperative commit subjects such as `Add account repository` or `Validate ledger entries`.
-
-Pull requests should include a concise description, the reason for the change, test results, and any configuration or database assumptions. Link related issues when available. For API changes, include example requests and responses.
-
-## Security & Configuration Tips
-
-Do not commit secrets, database passwords, or local environment files. Keep environment-specific settings outside source control and document required properties in `application.properties` or project docs. PostgreSQL is a runtime dependency, so note any local database setup required by new features.
+- `.env`
+- `build/`
+- `.gradle/`
