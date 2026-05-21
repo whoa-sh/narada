@@ -2,26 +2,38 @@ package sh.whoa.narada.core
 
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
-import jakarta.persistence.PreUpdate
+import jakarta.persistence.PostLoad
+import jakarta.persistence.PostPersist
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.Transient
+import org.springframework.data.domain.Persistable
 import sh.whoa.narada.util.UUIDv7
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @MappedSuperclass
-class BaseEntity {
+abstract class BaseEntity : Persistable<UUID> {
 	@Id
-	val id: UUID = UUIDv7.randomUUID()
+	private val id: UUID = UUIDv7.randomUUID()
 
 	@CreatedDate
-	val createdAt: LocalDateTime = LocalDateTime.now()
+	val createdAt: Instant = Instant.now()
 
 	@UpdateTimestamp
-	var updatedAt: LocalDateTime? = null
+	var updatedAt: Instant? = null
 
-	@PreUpdate
-	fun updateTimestamp() {
-		updatedAt = LocalDateTime.now()
+	@Transient
+	@jakarta.persistence.Transient
+	private var isNewEntity = true
+
+	override fun getId(): UUID = id
+
+	override fun isNew(): Boolean = isNewEntity
+
+	@PostPersist
+	@PostLoad
+	fun markNotNew() {
+		isNewEntity = false
 	}
 }

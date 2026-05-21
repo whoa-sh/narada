@@ -13,6 +13,12 @@
 - Gradle wrapper
 - Docker / Docker Compose
 
+## Architecture Notes
+
+- **Primary Keys:** Uses `UUIDv7` for lexicographically sortable, time-based primary keys.
+- **Auditing:** Uses UTC `java.time.Instant` for `createdAt` and `updatedAt` to ensure safe timezone handling in distributed systems.
+- **Performance:** `BaseEntity` implements Spring Data's `Persistable<UUID>` to bypass unnecessary `SELECT` queries on `save()` inserts.
+
 ## Repository Layout
 
 ```text

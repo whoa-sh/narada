@@ -39,8 +39,9 @@ object UUIDv7 {
 		val value = ByteArray(16).also { numberGenerator.get().nextBytes(it) }
 
 		val now = System.currentTimeMillis()
-		val prev = unpackMillis(lastState.get())
-		val ts = if (now >= prev) now else prev // clamp to avoid regressions
+		val state = nextState(now)
+		val ts = unpackMillis(state)
+		val seq = unpackSeq(state)
 
 		value[0] = ((ts ushr 40) and 0xFF).toByte()
 		value[1] = ((ts ushr 32) and 0xFF).toByte()
@@ -48,9 +49,6 @@ object UUIDv7 {
 		value[3] = ((ts ushr 16) and 0xFF).toByte()
 		value[4] = ((ts ushr 8) and 0xFF).toByte()
 		value[5] = (ts and 0xFF).toByte()
-
-		// If the same millisecond as the last call, increment 12-bit counter else reseed
-		val seq: Int = nextSeq(ts)
 
 		// Set the version to 7 in high nibble of byte 6
 		value[6] = (((0x7 shl 4) or ((seq ushr 8) and 0x0F))).toByte()
@@ -76,31 +74,37 @@ object UUIDv7 {
 			(this[offset + 7].toLong() and 0xFF)
 
 	/**
-	 * Returns the 12-bit monotonic sequence for the given millisecond:
-	 * - If [ts] differs from the last seen timestamp, seed with a random 12-bit value.
-	 * - If [ts] matches, increment modulo 4096 to preserve order for same-ms calls.
+	 * Returns the packed monotonic state (timestamp and sequence) for the given millisecond:
+	 * - If [ts] > last seen timestamp, seed with a random 12-bit value.
+	 * - If [ts] <= last seen, increment sequence. If sequence overflows 4095, increment timestamp and reset sequence.
 	 *
 	 * Uses CAS on a packed [lastState] value to keep timestamp+sequence transitions atomic.
 	 */
-	private fun nextSeq(ts: Long): Int {
+	private fun nextState(ts: Long): Long {
 		while (true) {
 			val prevState = lastState.get()
 			val lastTs = unpackMillis(prevState)
 			val lastSeq = unpackSeq(prevState)
 
-			if (ts != lastTs) {
+			if (ts > lastTs) {
 				// New millisecond: randomize the starting point to retain entropy
 				val seeded = numberGenerator.get().nextInt(1 shl 12)
 				val nextState = packState(ts, seeded)
 				if (lastState.compareAndSet(prevState, nextState)) {
-					return seeded
+					return nextState
 				}
 			} else {
-				// Same millisecond: increment and wrap in 12 bits
-				val next = (lastSeq + 1) and 0x0FFF
-				val nextState = packState(ts, next)
+				// Same millisecond or clock moved backwards: increment sequence
+				val nextSeq = lastSeq + 1
+				val nextState =
+					if (nextSeq > 0x0FFF) {
+						// Overflow: increment timestamp and reset sequence to 0
+						packState(lastTs + 1, 0)
+					} else {
+						packState(lastTs, nextSeq)
+					}
 				if (lastState.compareAndSet(prevState, nextState)) {
-					return next
+					return nextState
 				}
 			}
 			// If either CAS fails, retry with fresh reads
