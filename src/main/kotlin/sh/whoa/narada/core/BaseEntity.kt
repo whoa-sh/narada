@@ -5,9 +5,9 @@ import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
+import jakarta.persistence.Transient
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import org.springframework.data.annotation.Transient
 import org.springframework.data.domain.Persistable
 import sh.whoa.narada.util.UUIDv7
 import java.time.Instant
@@ -29,7 +29,6 @@ abstract class BaseEntity : Persistable<UUID> {
 		protected set
 
 	@Transient
-	@jakarta.persistence.Transient
 	private var isNewEntity = true
 
 	override fun getId(): UUID = id
