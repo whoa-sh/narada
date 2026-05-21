@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class BaseEntityTest {
 	private class TestEntity : BaseEntity()
@@ -34,13 +33,14 @@ class BaseEntityTest {
 		val id = entity1.getId()
 
 		// Using reflection to create another entity with the same ID
-		val entity2 = object : BaseEntity() {
-			init {
-				val idField = BaseEntity::class.java.getDeclaredField("id")
-				idField.isAccessible = true
-				idField.set(this, id)
+		val entity2 =
+			object : BaseEntity() {
+				init {
+					val idField = BaseEntity::class.java.getDeclaredField("id")
+					idField.isAccessible = true
+					idField.set(this, id)
+				}
 			}
-		}
 
 		assertEquals(entity1, entity2)
 		assertEquals(entity1.hashCode(), entity2.hashCode())
