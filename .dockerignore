@@ -1,0 +1,17 @@
+.git
+.gitignore
+.idea
+.vscode
+.gradle
+build
+out
+target
+*.iml
+*.ipr
+*.iws
+*.log
+.env
+.env.*
+Dockerfile*
+docker-compose*.yml
+*.md
