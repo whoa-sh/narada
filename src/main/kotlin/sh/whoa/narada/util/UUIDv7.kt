@@ -64,14 +64,9 @@ object UUIDv7 {
 
 	// Big-endian 8-byte to long
 	private fun ByteArray.toLongBE(offset: Int = 0): Long =
-		((this[offset].toLong() and 0xFF) shl 56) or
-			((this[offset + 1].toLong() and 0xFF) shl 48) or
-			((this[offset + 2].toLong() and 0xFF) shl 40) or
-			((this[offset + 3].toLong() and 0xFF) shl 32) or
-			((this[offset + 4].toLong() and 0xFF) shl 24) or
-			((this[offset + 5].toLong() and 0xFF) shl 16) or
-			((this[offset + 6].toLong() and 0xFF) shl 8) or
-			(this[offset + 7].toLong() and 0xFF)
+		java.nio.ByteBuffer
+			.wrap(this)
+			.getLong(offset)
 
 	/**
 	 * Returns the packed monotonic state (timestamp and sequence) for the given millisecond:

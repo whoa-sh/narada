@@ -14,7 +14,7 @@ class NaradaApplicationTests {
 		@Container
 		@ServiceConnection
 		@JvmStatic
-		val postgres = PostgreSQLContainer<Nothing>("postgres:17-alpine")
+		val postgres = PostgreSQLContainer("postgres:17-alpine")
 	}
 
 	@Test

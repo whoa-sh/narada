@@ -1,11 +1,12 @@
 package sh.whoa.narada.core
 
+import jakarta.persistence.Column
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
+import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Transient
 import org.springframework.data.domain.Persistable
 import sh.whoa.narada.util.UUIDv7
@@ -17,10 +18,12 @@ abstract class BaseEntity : Persistable<UUID> {
 	@Id
 	private val id: UUID = UUIDv7.randomUUID()
 
-	@CreatedDate
-	val createdAt: Instant = Instant.now()
+	@CreationTimestamp
+	@Column(updatable = false, nullable = false)
+	var createdAt: Instant? = null
 
 	@UpdateTimestamp
+	@Column(nullable = false)
 	var updatedAt: Instant? = null
 
 	@Transient
