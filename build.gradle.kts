@@ -1,3 +1,7 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-only OR SSPL-1.0 OR Elastic-2.0
+ * Copyright (c) 2026 Subhrodip Mohanta (whoa.sh). All rights reserved.
+ */
 plugins {
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.kotlin.spring)
@@ -5,6 +9,7 @@ plugins {
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependency.management)
 	alias(libs.plugins.ktlint)
+	alias(libs.plugins.spotless)
 }
 
 group = "sh.whoa"
@@ -64,10 +69,31 @@ ktlint {
 	}
 }
 
+spotless {
+	kotlin {
+		target("src/**/*.kt")
+		licenseHeaderFile(rootProject.file("config/license/HEADER_SLASHSTAR.txt"))
+	}
+	kotlinGradle {
+		target("*.gradle.kts", "gradle/**/*.gradle.kts")
+		licenseHeaderFile(rootProject.file("config/license/HEADER_SLASHSTAR.txt"), "(plugins|import|buildscript|pluginManagement|rootProject)")
+	}
+	format("hashHeader") {
+		target(".github/**/*.yml", ".github/**/*.yaml", "scripts/**/*.ps1", "src/**/*.properties")
+		targetExclude("src/test/resources/application.properties")
+		licenseHeaderFile(rootProject.file("config/license/HEADER_HASH.txt"), "([^#\\r\\n])")
+	}
+	format("sqlHeader") {
+		target("src/**/*.sql")
+		licenseHeaderFile(rootProject.file("config/license/HEADER_SQL.txt"), "(?i)(create|alter|insert|update|delete|select)")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
 tasks.named("check") {
 	dependsOn("ktlintCheck")
+	dependsOn("spotlessCheck")
 }

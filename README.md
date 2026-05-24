@@ -86,7 +86,7 @@ Default local values in `.env.example`:
 - On startup, Flyway runs before JPA initialization.
 - Current baseline: `V1__init.sql`.
 - Tests keep `contextLoads` and run with Flyway enabled against H2 in PostgreSQL mode.
-- Applied migrations are immutable. Do not edit an already-applied `V*__*.sql`; create a new migration file instead.
+- Applied migrations are immutable except for repository-wide license header updates. Do not edit an already-applied `V*__*.sql` for schema or data changes; create a new migration file instead.
 
 If you modify an already-applied migration locally, reset the local Postgres volume before restart:
 
@@ -106,7 +106,7 @@ Runs on:
 
 Jobs:
 
-- `Lint (ktlint)` -> `ktlintCheck`
+- `Lint (ktlint + license headers)` -> `ktlintCheck spotlessCheck`
 - `Build & Test (Gradle)` -> `clean test build` (runs after lint)
 - Uploads `gradle-test-report` artifact on every run
 
@@ -183,6 +183,8 @@ Gradle (Unix-like):
 ./gradlew --no-daemon test
 ./gradlew --no-daemon build
 ./gradlew --no-daemon ktlintCheck
+./gradlew --no-daemon spotlessCheck
+./gradlew --no-daemon spotlessApply
 ./gradlew --no-daemon clean
 ```
 
@@ -192,8 +194,12 @@ Gradle (Windows PowerShell):
 .\gradlew.bat --no-daemon test
 .\gradlew.bat --no-daemon build
 .\gradlew.bat --no-daemon ktlintCheck
+.\gradlew.bat --no-daemon spotlessCheck
+.\gradlew.bat --no-daemon spotlessApply
 .\gradlew.bat --no-daemon clean
 ```
+
+License headers are enforced by Spotless. Run `spotlessApply` before committing when adding Kotlin, Gradle Kotlin DSL, YAML, PowerShell, properties, or Flyway SQL migration files.
 
 Helper scripts:
 
@@ -224,6 +230,14 @@ make compose-down-v
 - [Container release workflow](./.github/workflows/container.yml)
 
 On Windows, use `.\gradlew.bat ...`.
+
+## License
+
+Narada source code is available under a choice of AGPL-3.0-only, SSPL-1.0, or Elastic-2.0. The AGPL option is open source under the OSI definition; SSPL and Elastic License 2.0 are source-available options with additional restrictions.
+
+See [LICENSE.txt](./LICENSE.txt), [NOTICE](./NOTICE), and the full texts in [licenses](./licenses).
+
+Source headers are applied and checked with Spotless via `spotlessApply` and `spotlessCheck`.
 
 ## Production Notes
 

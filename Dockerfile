@@ -51,7 +51,7 @@ RUN set -eux; \
 
 LABEL org.opencontainers.image.title="narada" \
 	org.opencontainers.image.description="Kotlin Spring Boot service" \
-	org.opencontainers.image.licenses="Proprietary" \
+	org.opencontainers.image.licenses="AGPL-3.0-only OR SSPL-1.0 OR Elastic-2.0" \
 	org.opencontainers.image.source="https://github.com/whoash/narada"
 
 COPY --from=builder --chown=spring:spring /workspace/app.jar /app/app.jar
