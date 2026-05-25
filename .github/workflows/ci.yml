@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-only OR SSPL-1.0 OR Elastic-2.0
+# Copyright (c) 2026 Subhrodip Mohanta (whoa.sh). All rights reserved.
 name: CI
 
 on:
@@ -17,7 +19,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint (ktlint)
+    name: Lint (ktlint + license headers)
     runs-on: ubuntu-slim
     steps:
       - name: Checkout
@@ -37,8 +39,8 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
-      - name: Ktlint Check
-        run: ./gradlew --no-daemon ktlintCheck
+      - name: Style and License Checks
+        run: ./gradlew --no-daemon ktlintCheck spotlessCheck
 
   build_test:
     name: Build & Test (Gradle)

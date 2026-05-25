@@ -1,0 +1,10 @@
+Narada is made available under a choice of the following licenses:
+
+- GNU Affero General Public License v3.0 only (AGPL-3.0-only)
+- Server Side Public License v1 (SSPL-1.0)
+- Elastic License 2.0 (Elastic-2.0)
+
+You may use the source code under any one of those licenses, unless a
+specific file states different licensing terms.
+
+The full license texts are provided in the licenses/ directory.
