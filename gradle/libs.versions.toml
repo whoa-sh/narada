@@ -4,7 +4,7 @@ spring-boot = "4.0.6"
 spring-dependency-management = "1.1.7"
 ktlint = "14.2.0"
 testcontainers = "1.21.4"
-mockk = "1.13.10"
+mockk = "1.14.9"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
